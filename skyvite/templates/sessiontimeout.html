@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Session Timeout{% endblock %}
+
+{% block content %}
+<div style="text-align: center; margin-top: 100px;">
+    <h2>⏰ Session Timed Out</h2>
+    <p>Your session expired due to inactivity.</p>
+    <a href="{% url 'signin' %}" class="btn btn-primary">Login Again</a>
+</div>
+{% endblock %}

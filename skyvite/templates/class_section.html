@@ -1,0 +1,304 @@
+{% extends 'skyvite/base.html' %}
+{% block title %}Manage Classes & Sections{% endblock %}
+
+{% block content %}
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+    .tabs-container { 
+        display: flex; 
+        gap: 10px; 
+        flex-wrap: wrap; 
+    }
+    .nav-pills {
+        flex-direction: column;
+        width: 135px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 10px;
+        height: fit-content;
+    }
+    .nav-pills .nav-link {
+        color: #333;
+        border-radius: 5px;
+        font-weight: 400;
+        margin-bottom: 15px;
+        width: 100%;
+        display: flex;
+        justify-content: start;
+        border: 2px solid transparent;
+        padding: 2px 10px;
+
+    }
+    .nav-pills .nav-link.active {
+        color: #000;
+        font-weight: 400;
+        background: none;
+        border: 2px solid #5f76e8;
+        color: #5f76e8;
+    }
+    .tab-content {
+        flex: 1;
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid #c4c4c4;
+    }
+    label {
+    font-weight: 500;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555 !important;
+    }
+    .form-control {
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+
+    /* Sweetalert Delete CSS */
+    .swal2-icon--warning {
+        border-color: #f8bb86;
+        border-width: 10px;
+        border-bottom-color: transparent;
+    }
+    .swal2-title{
+        color: #3085d6;
+        font-size: 25px;
+        font-family: Sora;
+    }
+    .swal2-html-container{
+        font-size: 16px;
+        color: #333;
+    }
+    /* --------------------- */
+</style>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="d-md-flex d-block align-items-center justify-content-between mb-3">
+            <div class="my-auto mb-2">
+                <h3 class="mb-1 pagename">Master</h3>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item">Students</li>
+                        <li class="breadcrumb-item active" aria-current="page">Master</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <ul class="nav nav-pills me-3" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="session-tab" data-bs-toggle="pill" data-bs-target="#session-panel" type="button" role="tab">Session</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="class-tab" data-bs-toggle="pill" data-bs-target="#class-panel" type="button" role="tab">Standard</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="section-tab" data-bs-toggle="pill" data-bs-target="#section-panel" type="button" role="tab">Section</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="house-tab" data-bs-toggle="pill" data-bs-target="#house-panel" type="button" role="tab">House</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="withdraw-tab" data-bs-toggle="pill" data-bs-target="#withdraw-panel" type="button" role="tab">Withdrawal</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="document-tab" data-bs-toggle="pill" data-bs-target="#document-panel" type="button" role="tab">Documents</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="pills-tabContent">
+                <!-- Session -->
+                <div class="tab-pane fade show active" id="session-panel" role="tabpanel">
+                    <label class="form-label">Add Session</label>
+                    <form id="sessionForm" class="mb-4">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="text" name="name" class="form-control" placeholder="Enter Session Name" required>
+                            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                        </div>
+                    </form>
+
+                    <h6 class="fw-semibold">All Sessions</h6>
+                    <ul id="sessionList" class="list-group">
+                        {% for s in sessions %}
+                        <li id="session-{{ s.id }}" class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ s.name }}
+                            <button data-id="{{ s.id }}" data-type="session" class="btn btn-sm delete-btn">Delete</button>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">No sessions yet</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Class -->
+                <div class="tab-pane fade" id="class-panel" role="tabpanel">
+                    <label class="form-label">Add Class</label>
+                    <form id="classForm" class="mb-4">
+                        {% csrf_token %}
+                        <div class="mb-2">
+                            <input type="text" name="name" class="form-control" placeholder="Enter Class Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <select name="session" class="form-control" required>
+                                <option value="">Select Session</option>
+                                {% for s in sessions %}
+                                    <option value="{{ s.id }}">{{ s.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    </form>
+
+                    <h6 class="fw-semibold">All Classes</h6>
+                    <ul id="classList" class="list-group">
+                        {% for c in classes %}
+                        <li id="class-{{ c.id }}" class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ c.name }}
+                            <button data-id="{{ c.id }}" data-type="class" class="btn btn-outline-danger btn-sm delete-btn">🗑️</button>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">No classes yet</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Section -->
+                <div class="tab-pane fade" id="section-panel" role="tabpanel">
+                    <label class="form-label">Add Section</label>
+                    <form id="sectionForm" class="mb-4">
+                        {% csrf_token %}
+                        <div class="mb-2">
+                            <input type="text" name="name" class="form-control" placeholder="Enter Section Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <select name="school_class" class="form-control" required>
+                                <option value="">Select Class</option>
+                                {% for c in classes %}
+                                    <option value="{{ c.id }}">{{ c.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                    </form>
+
+                    <h6 class="fw-semibold">All Sections</h6>
+                    <ul id="sectionList" class="list-group">
+                        {% for sec in sections %}
+                        <li id="section-{{ sec.id }}" class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ sec }}
+                            <button data-id="{{ sec.id }}" data-type="section" class="btn btn-outline-danger btn-sm delete-btn">🗑️</button>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">No sections yet</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ AJAX SCRIPT with SweetAlert2 -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // --------- ADD ITEMS ---------
+    const handleForm = (formId, url, listId, type) => {
+        const form = document.getElementById(formId);
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            fetch(url, { method: "POST", headers: { "X-CSRFToken": csrfToken }, body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const list = document.getElementById(listId);
+                    const emptyItem = list.querySelector(".text-muted");
+                    if (emptyItem) emptyItem.remove();
+
+                    const li = document.createElement("li");
+                    li.id = `${type}-${data.id}`;
+                    li.className = "list-group-item d-flex justify-content-between align-items-center";
+                    li.innerHTML = `
+                        ${data.name}
+                        <button data-id="${data.id}" data-type="${type}" class="btn btn-outline-danger btn-sm delete-btn">🗑️</button>
+                    `;
+                    list.appendChild(li);
+                    form.reset();
+
+                    // update dependent dropdowns
+                    if (type === "session") {
+                        document.querySelector('#classForm select[name="session"]')?.append(new Option(data.name, data.id));
+                    }
+                    if (type === "class") {
+                        document.querySelector('#sectionForm select[name="school_class"]')?.append(new Option(data.name, data.id));
+                    }
+                } else {
+                    Swal.fire("Error", data.error || "Something went wrong", "error");
+                }
+            });
+        });
+    };
+
+    handleForm("sessionForm", "{% url 'ajax_add_session' %}", "sessionList", "session");
+    handleForm("classForm", "{% url 'ajax_add_class' %}", "classList", "class");
+    handleForm("sectionForm", "{% url 'ajax_add_section' %}", "sectionList", "section");
+
+    // --------- DELETE ITEMS ---------
+    document.body.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("delete-btn")) return;
+
+        const id = e.target.dataset.id;
+        const type = e.target.dataset.type;
+
+        let message = "Are you sure you want to delete this item?";
+        if (type === "class") message = "Deleting a class will delete all its students. Do you still want to delete this class?";
+        if (type === "session") message = "Deleting a session will delete all its classes and sections. Do you still want to delete this session?";
+
+        Swal.fire({
+            title: 'Confirm Delete',
+            text: message,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Delete'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch("{% url 'ajax_delete_item' %}", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
+                    body: JSON.stringify({ id: id, type: type })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire('Deleted!', 'Item has been deleted.', 'success');
+                        document.getElementById(`${type}-${id}`)?.remove();
+
+                        // remove from dropdowns
+                        if (type === "session") document.querySelector(`#classForm select[name="session"] option[value="${id}"]`)?.remove();
+                        if (type === "class") document.querySelector(`#sectionForm select[name="school_class"] option[value="${id}"]`)?.remove();
+                    } else {
+                        Swal.fire("Error", data.error || "Could not delete item", "error");
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

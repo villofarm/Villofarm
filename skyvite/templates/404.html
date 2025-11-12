@@ -1,0 +1,11 @@
+{% extends "skyvite/base.html" %}
+
+{% block title %}Page Not Found | {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+  <h1 class="display-4">404 - Page Not Found</h1>
+  <p class="lead">Oops! The page you’re looking for doesn’t exist or may have been moved.</p>
+  <a href="{% url 'dashboard' %}" class="btn btn-primary mt-3">Go to Dashboard</a>
+</div>
+{% endblock %}

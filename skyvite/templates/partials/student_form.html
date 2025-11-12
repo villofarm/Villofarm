@@ -1,0 +1,9 @@
+<form id="editStudentForm" method="post" enctype="multipart/form-data" action="{% url 'edit_student' form.instance.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div class="mt-3 text-end">
+        <button type="submit" class="btn btn-success">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+    </div>
+</form>

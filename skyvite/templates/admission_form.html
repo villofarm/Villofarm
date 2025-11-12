@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admission Form</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .single_page_print {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .school_logo {
+            position: absolute;
+            left: 20px;
+            top: 25px;
+            max-width: 80px;
+        }
+
+        .school_name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #141414;
+            margin-top: 0;
+        }
+
+        .school_details {
+            font-size: 16px;
+            color: #141414;
+            margin: 3px;
+        }
+
+        hr {
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+
+        .admission_form {
+            font-size: 20px;
+            margin: 20px 0 20px 0;
+            border-bottom: 1.5px solid #000;
+            display: inline;
+            padding: 0 5px;
+        }
+
+        .admission_label {
+            font-size: 15px;
+            color: #373737;
+            margin: 15px 0;
+            text-align: justify;
+            line-height: 1.6;
+        }
+        .admission_input {
+            font-size: 15px;
+            color: #373737;
+            margin: 15px 0;
+            text-align: justify;
+            line-height: 1.6;
+        }
+
+
+        .issue_date,
+        .issue_place {
+            font-size: 15px;
+            color: #373737;
+            margin: 10px 0;
+            text-align: left;
+        }
+        .principal_signature {
+            margin-top: 150px !important;
+            text-align: end;
+            padding-right: 30px;
+        }
+        .admn_heading {
+            font-size: 18px;
+            font-weight: bold;
+            color: #141414;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .admn_info {
+            font-size: 15px;
+            color: #373737;
+            margin: 15px 0;
+            text-align: justify;
+            line-height: 1.6;
+        }
+
+        @media print {
+            .single_page_print{
+                height: 92vh !important;
+            }
+            .school_name {
+                font-size: 30px !important;
+            }
+
+            .admission_label {
+                font-size: 17px !important;
+            }
+
+            .certificate_type {
+                font-size: 22px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="single_page_print text-center" style="border: 1px solid gray; padding: 20px; position: relative; height: auto;">
+          {% if school.school_logo %}
+            <img class="school_logo" src="{{ school.school_logo.url }}" alt="School Logo">
+        {% else %}
+            <img src="https://i.pinimg.com/736x/f8/a3/6d/f8a36de29089f1e66c503638c4ae0337.jpg" alt="Default Logo" style="height: 100px;">
+        {% endif %}
+
+        <h1 class="school_name">{{ school.name }}</h1>
+        <p class="school_details">{{ school.address }}</p>
+        <p class="school_details">Phone: {{ school.mobile_no }} | Email: {{ school.email }}</p>
+        <hr>
+
+        <h3 class="admission_form">Admission Form</h3>
+
+        <h4 style="text-align: start; margin: 8px 0;">Student Information</h4>
+        <p class="admission_label" style="margin: 0;">First Name  _____________________  Middle Name  _____________________</p>
+        <p class="admission_label" style="margin-top: 8px;">Last Name  _____________________ </p>
+        <p class="admission_label" style="margin-top: 8px;">DOB  __________________   Gender :   <input style="width:17px; height:17px; margin-left: 5px;" type="checkbox"> Male   <input style="width:17px; height:17px;" type="checkbox"> Female</p>
+        <p class="admission_label" style="margin-top: 8px;">Religion  ______________________ </p>
+        <p class="admission_label" style="margin-top: 8px;">Place of Birth  _____________________ </p>
+    
+        
+       
+    </div>
+    <div class="single_page_print text-center"  style="border: 1px solid gray; padding: 20px; position: relative; height: auto;">
+        <h3 class="admn_heading">Parental/Guardian Responsibilities at the College</h3>
+        <p class="admn_info">Parents or Guardians must acknowledge that enrolling a child at the College involves participation in the institution’s academic and extracurricular programs. This includes mandatory attendance at sporting events, camps, and excursions that occur outside the regular class schedule. Any request for exemption from such activities may be considered by the Principal or a designated staff member upon receiving a formal written request. Parents and Guardians are expected to follow the College's policies and procedures consistently. A strong partnership between the College leadership and parents/guardians is essential to support the well-being of the child.</p>
+    </div>
+<script>
+window.onload = function() {
+    window.print();
+};
+</script>
+
+</body>
+
+</html>

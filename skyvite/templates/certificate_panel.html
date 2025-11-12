@@ -1,0 +1,195 @@
+{% extends 'skyvite/base.html' %}
+{% load static %}
+{% block title %}Certificate Panel{% endblock %}
+
+{% block content %}
+<style>
+    .search-panel {
+        margin-bottom: 20px;
+    }
+
+    .student-list {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .student-list li {
+        cursor: pointer;
+    }
+
+    .student-list li.selected {
+        background-color: #d1e7dd;
+        font-weight: bold;
+    }
+
+    #certificate-preview {
+        min-height: 500px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: #fafafa;
+    }
+
+    .download_certificate {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid gray !important;
+        color: gray !important;
+        padding: 5px 7px;
+        background: transparent !important;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .download_certificate svg{
+        margin: 0 !important;
+        width: 22px;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+
+        <div class="row mb-3 d-flex ">
+            <div class="d-md-flex d-block align-items-center justify-content-between mb-3">
+                <div class="my-auto mb-2">
+                    <h3 class="mb-1">All Students</h3>
+                    <nav>
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="">Dashboard</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">All Students</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <button id="download-btn" class="download_certificate" style="display: flex; align-items: center;">
+                        <i data-feather="printer" class="form-control-icon" style="margin-right: 5px;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left: Filters + Student List -->
+            <div class="col-md-3">
+                <div class="search-panel">
+                    <select id="filter-class" class="form-control mb-2">
+                        <option value="">Select Class</option>
+                        {% for c in classes %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select id="filter-section" class="form-control mb-2">
+                        <option value="">Select Section</option>
+                        {% for s in sections %}
+                        <option value="{{ s.id }}">{{ s.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <input type="text" id="filter-admission" class="form-control mb-2" placeholder="Admission No.">
+                    <button id="filter-btn" class="btn btn-primary w-100">Search</button>
+                </div>
+
+                <select id="certificate-type" class="form-control mb-2">
+                    <option value="bonafide">Bonafide Certificate</option>
+                    <option value="character_certificate">Character Certificate</option>
+                    <option value="dob_certificate">DOB Certificate</option>
+                </select>
+
+                <ul class="list-group student-list" id="student-list">
+                    <li class="list-group-item text-muted text-center">Search students to display</li>
+                </ul>
+            </div>
+
+            <!-- Right: Certificate Preview -->
+            <div class="col-md-9">
+                <div id="certificate-preview" class="p-3 position-relative">
+                    <p class="text-muted text-center">Select a student to preview certificate...</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let selectedStudentId = null;
+    let selectedCertType = null;
+
+    // Load students based on filters
+    function loadStudents() {
+        const classId = document.getElementById("filter-class").value;
+        const sectionId = document.getElementById("filter-section").value;
+        const admission = document.getElementById("filter-admission").value;
+
+        fetch(`/certificate-panel/?action=get_students&class_id=${classId}&section_id=${sectionId}&admission_no=${admission}`)
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById("student-list");
+                list.innerHTML = "";
+
+                if (data.length === 0) {
+                    list.innerHTML = '<li class="list-group-item text-muted text-center">No students found</li>';
+                } else {
+                    data.forEach(stu => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item d-flex justify-content-between align-items-center";
+                        li.innerHTML = `<span>${stu.name} (Adm: ${stu.admission_no})</span>`;
+
+                        // Make the whole li clickable
+                        li.style.cursor = "pointer";
+                        li.onclick = () => loadCertificate(stu.id, li);
+
+                        // Optional hover effect
+                        li.onmouseover = () => li.classList.add("bg-light");
+                        li.onmouseout = () => li.classList.remove("bg-light");
+
+                        list.appendChild(li);
+                    });
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching students:", err);
+                const list = document.getElementById("student-list");
+                list.innerHTML = '<li class="list-group-item text-danger text-center">Error loading students</li>';
+            });
+    }
+
+
+
+    // Load certificate preview
+    function loadCertificate(studentId, listItem = null) {
+        const certType = document.getElementById("certificate-type").value;
+        selectedStudentId = studentId;
+        selectedCertType = certType;
+
+        fetch(`/certificate-panel/?action=get_certificate&student_id=${studentId}&cert_type=${certType}`)
+            .then(res => res.json())
+            .then(data => {
+                const preview = document.getElementById("certificate-preview");
+                preview.innerHTML = data.html || "<p class='text-danger'>Certificate template not found.</p>";
+
+                document.querySelectorAll("#student-list li").forEach(li => li.classList.remove("selected"));
+                if (listItem) listItem.classList.add("selected");
+
+                document.getElementById("download-btn").classList.remove("disabled");
+            });
+    }
+
+    // Open certificate in new tab for printing
+    document.getElementById("download-btn").addEventListener("click", () => {
+        if (selectedStudentId && selectedCertType) {
+            window.open(`/print-certificate/${selectedStudentId}/${selectedCertType}/`, "_blank");
+        }
+    });
+
+    document.getElementById("filter-btn").addEventListener("click", loadStudents);
+    document.getElementById("certificate-type").addEventListener("change", () => {
+        if (selectedStudentId) loadCertificate(selectedStudentId);
+    });
+</script>
+{% endblock %}

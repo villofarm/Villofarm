@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bonafide Certificate</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .certificate {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .school_logo {
+            position: absolute;
+            left: 20px;
+            top: 25px;
+            max-width: 80px;
+        }
+
+        .school_name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #141414;
+            margin-top: 0;
+        }
+
+        .school_details {
+            font-size: 16px;
+            color: #141414;
+            margin: 3px;
+        }
+
+        hr {
+            margin-top: 10px;
+            margin-bottom: 50px;
+        }
+
+        .certificate_type {
+            font-size: 20px;
+            margin: 50px 0 50px 0;
+            border-bottom: 1.5px solid ;
+            display: inline;
+            padding: 0 5px;
+        }
+
+        .certificate_description {
+            font-size: 15px;
+            color: #373737;
+            margin: 15px 0;
+            text-align: justify;
+            line-height: 1.6;
+        }
+
+
+        .issue_date,
+        .issue_place {
+            font-size: 15px;
+            color: #373737;
+            margin: 10px 0;
+            text-align: left;
+        }
+        .principal_signature {
+            margin-top: 150px !important;
+            text-align: end;
+            padding-right: 30px;
+        }
+
+        @media print {
+            .certificate{
+                height: 92vh !important;
+            }
+            .school_name {
+                font-size: 30px !important;
+            }
+
+            .certificate_description {
+                font-size: 17px !important;
+            }
+
+            .certificate_type {
+                font-size: 22px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="certificate text-center" style="border: 1px solid gray; padding: 20px; position: relative; height: auto;">
+          {% if school.school_logo %}
+            <img class="school_logo" src="{{ school.school_logo.url }}" alt="School Logo">
+        {% else %}
+            <img src="https://i.pinimg.com/736x/f8/a3/6d/f8a36de29089f1e66c503638c4ae0337.jpg" alt="Default Logo" style="height: 100px;">
+        {% endif %}
+
+
+
+
+        <h1 class="school_name">{{ school.name }}</h1>
+        <p class="school_details">{{ school.address }}</p>
+        <p class="school_details">Phone: {{ school.mobile_no }} | Email: {{ school.email }}</p>
+        <hr>
+
+        <h3 class="certificate_type">DOB Certificate</h3>
+
+        <p class="certificate_description" style="margin-top: 50px;">
+            This is to certify that <strong>{{ student.first_name }} {{ student.surname }}</strong>,
+            bearing Admission No: <strong>{{ student.admission_number }}</strong>, is a bonafide student of our school,
+            <strong>{{ school.name }}</strong>. He has been enrolled in our school and is currently pursuing his studies
+            in the <strong>{{ student.student_class.name }} {{ student.section.name }}</strong> since
+            <strong>{{ student.admission_date }}</strong>.
+        </p>
+
+        <p class="certificate_description">
+            We further confirm that he is a regular student attending classes and has been abiding by the rules
+            and regulations of the institution.
+        </p>
+
+        <p class="certificate_description">
+            This certificate is being issued upon the student's request for whatever purpose it may serve him.
+        </p>
+          <p class="certificate_description">
+            We wish them success in their endeavors.
+        </p>
+
+        <div style="margin-top: 40px;">
+            <p class="issue_date"><strong>Date : </strong>{{ today|default:"07/10/2025" }}</p>
+            <p class="issue_place"><strong>Place : </strong>{{ school.name }}</p>
+        </div>
+        <p class="principal_signature"><strong>Principal</strong></p>
+    </div>
+<script>
+window.onload = function() {
+    window.print();
+};
+</script>
+
+</body>
+
+</html>

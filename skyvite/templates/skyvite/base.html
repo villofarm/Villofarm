@@ -1,0 +1,392 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="https://www.franciscansolutions.com/images/Franciscan_Logo_Left.svg">
+    <title>{% block title %}Skyvite{% endblock %}</title>
+    <link href="{% static 'assets/extra-libs/c3/c3.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/libs/chartist/dist/chartist.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css' %}" rel="stylesheet" />
+    <link href="{% static 'dist/css/style.min.css' %}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-[HASH]" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+</head>
+
+<body>
+    <div class="preloader">
+        <img src="{% static 'assets/images/preloader-gif.gif' %}" alt="Loading..." class="preloader-gif">
+    </div>
+    <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
+        <header class="topbar" data-navbarbg="skin6">
+            <nav class="navbar top-navbar navbar-expand-lg">
+                <div class="navbar-header" data-logobg="skin6">
+                    <a class="nav-toggler waves-effect waves-light d-block d-lg-none" href="javascript:void(0)"><i
+                            class="ti-menu ti-close"></i></a>
+                    <div class="navbar-brand">
+                        <!-- Logo icon -->
+                        <a href="dashboard.html">
+                            <img src="{% static 'assets/images/skyvite_logo.png' %}"
+                                alt="" style="max-width: 110px;">
+                        </a>
+                    </div>
+                    <a class="topbartoggler d-block d-lg-none waves-effect waves-light" href="javascript:void(0)"
+                        data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><i
+                            class="ti-more"></i></a>
+                </div>
+
+                <div class="navbar-collapse collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav float-left me-auto ms-3 ps-1">
+                    </ul>
+                    <ul class="navbar-nav float-end">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle pl-md-3 position-relative" href="javascript:void(0)"
+                                id="bell" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                <span><img style="max-width: 30px; border-radius:100%;"
+                                        src="{% static 'assets/images/landingpage/notification.gif' %}" alt=""></span>
+                                <span class="badge text-bg-primary notify-no rounded-circle">5</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-left mailbox animated bounceInDown">
+                                <ul class="list-style-none">
+                                    <li>
+                                        <div class="message-center notifications position-relative">
+                                            <!-- Message -->
+                                            <a href="javascript:void(0)"
+                                                class="message-item d-flex align-items-center border-bottom px-3 py-2">
+                                                <div class="btn btn-danger rounded-circle btn-circle"><i
+                                                        data-feather="airplay" class="text-white"></i></div>
+                                                <div class="w-75 d-inline-block v-middle ps-2">
+                                                    <h6 class="message-title mb-0 mt-1">Luanch Admin</h6>
+                                                    <span class="font-12 text-nowrap d-block text-muted">Just see
+                                                        the my new
+                                                        admin!</span>
+                                                    <span class="font-12 text-nowrap d-block text-muted">9:30 AM</span>
+                                                </div>
+                                            </a>
+                                            <!-- Message -->
+                                            <a href="javascript:void(0)"
+                                                class="message-item d-flex align-items-center border-bottom px-3 py-2">
+                                                <span class="btn btn-success text-white rounded-circle btn-circle"><i
+                                                        data-feather="calendar" class="text-white"></i></span>
+                                                <div class="w-75 d-inline-block v-middle ps-2">
+                                                    <h6 class="message-title mb-0 mt-1">Event today</h6>
+                                                    <span
+                                                        class="font-12 text-nowrap d-block text-muted text-truncate">Just
+                                                        a reminder that you have event</span>
+                                                    <span class="font-12 text-nowrap d-block text-muted">9:10 AM</span>
+                                                </div>
+                                            </a>
+                                            <!-- Message -->
+                                            <a href="javascript:void(0)"
+                                                class="message-item d-flex align-items-center border-bottom px-3 py-2">
+                                                <span class="btn btn-info rounded-circle btn-circle"><i
+                                                        data-feather="settings" class="text-white"></i></span>
+                                                <div class="w-75 d-inline-block v-middle ps-2">
+                                                    <h6 class="message-title mb-0 mt-1">Settings</h6>
+                                                    <span
+                                                        class="font-12 text-nowrap d-block text-muted text-truncate">You
+                                                        can customize this template
+                                                        as you want</span>
+                                                    <span class="font-12 text-nowrap d-block text-muted">9:08 AM</span>
+                                                </div>
+                                            </a>
+                                            <!-- Message -->
+                                            <a href="javascript:void(0)"
+                                                class="message-item d-flex align-items-center border-bottom px-3 py-2">
+                                                <span class="btn btn-primary rounded-circle btn-circle"><i
+                                                        data-feather="box" class="text-white"></i></span>
+                                                <div class="w-75 d-inline-block v-middle ps-2">
+                                                    <h6 class="message-title mb-0 mt-1">Pavan kumar</h6> <span
+                                                        class="font-12 text-nowrap d-block text-muted">Just
+                                                        see the my admin!</span>
+                                                    <span class="font-12 text-nowrap d-block text-muted">9:02 AM</span>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link pt-3 text-center text-dark" href="javascript:void(0);">
+                                            <strong>Check all notifications</strong>
+                                            <i class="fa fa-angle-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img style="max-width: 30px; margin-bottom: 5px; border-radius:100%;"
+                                    src="{% static 'assets/images/landingpage/settings.gif' %}" alt="">
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="#">Action</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                        </li>
+                        <li class="nav-item d-none d-md-block">
+                        <li class="nav-item d-none d-md-block">
+                            <a class="nav-link" href="javascript:void(0)">
+                                <form>
+                                    <div class="customize-input">
+                                        <input class="form-control custom-shadow custom-radius border-0 bg-white"
+                                            type="search" placeholder="Search student" aria-label="Search">
+                                        <i class="form-control-icon" data-feather="search"></i>
+                                    </div>
+                                </form>
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <img src="https://media.licdn.com/dms/image/v2/D5603AQG3Nr71yVEI7A/profile-displayphoto-shrink_200_200/B56ZV2xx65HoAc-/0/1741454517821?e=2147483647&v=beta&t=eT2tDMzr0ISq5gdKq9a-ARuaYfPrxzZ_939jtvcsbsk"
+                                    alt="user" class="rounded-circle" width="40">
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-right user-dd animated flipInY">
+                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="user"
+                                        class="svg-icon me-2 ms-1"></i>
+                                    My Profile</a>
+                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="credit-card"
+                                        class="svg-icon me-2 ms-1"></i>
+                                    My Balance</a>
+                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="mail"
+                                        class="svg-icon me-2 ms-1"></i>
+                                    Inbox</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="settings"
+                                        class="svg-icon me-2 ms-1"></i>
+                                    Account Setting</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'signout' %}"><i data-feather="power"
+                                        class="svg-icon me-2 ms-1"></i>
+                                    Logout</a>
+                                <div class="dropdown-divider"></div>
+                                <div class="pl-4 p-3"><a href="javascript:void(0)" class="btn btn-sm btn-info">View
+                                        Profile</a></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <aside class="left-sidebar" data-sidebarbg="skin6">
+            <div class="scroll-sidebar" data-sidebarbg="skin6">
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav">
+                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="{% url 'dashboard' %}"
+                                aria-expanded="false"><i data-feather="home" class="feather-icon"></i><span
+                                    class="hide-menu">Home</span></a></li>
+                        <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
+                                aria-expanded="false"><i class="fas fa-graduation-cap"></i><span
+                                    class="hide-menu">Manage Student</span></a>
+                            <ul aria-expanded="false" class="collapse  first-level base-level-line">
+                                <li class="sidebar-item"><a href="{% url 'class_section' %}" class="sidebar-link"><span
+                                            class="hide-menu">Master
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{% url 'add_student' %}" class="sidebar-link"><span
+                                            class="hide-menu">Student Admission
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{% url 'student_list' %}" class="sidebar-link"><span
+                                            class="hide-menu">All Student
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{% url 'student_list' %}" class="sidebar-link"><span
+                                            class="hide-menu">Missing Data
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{% url 'student_list' %}" class="sidebar-link"><span
+                                            class="hide-menu">Bulk Update
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{% url 'student_list' %}" class="sidebar-link"><span
+                                            class="hide-menu">Student withdrawal
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{% url 'student_list' %}" class="sidebar-link"><span
+                                            class="hide-menu">Student ID Card
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{% url 'student_list' %}" class="sidebar-link"><span
+                                            class="hide-menu">Promote Student
+                                        </span></a>
+                                </li>
+                                </li>
+                                <li class="sidebar-item"><a href="{% url 'certificate_panel' %}"
+                                        class="sidebar-link"><span class="hide-menu">Student Certificates
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="{% url 'certificate_panel' %}"
+                                        class="sidebar-link"><span class="hide-menu">Reports
+                                        </span></a>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- <li class="nav-small-cap"><span class="hide-menu">STUDENTS</span></li> -->
+                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="app-chat.html"
+                                aria-expanded="false"><i data-feather="user" class="feather-icon"></i><span
+                                    class="hide-menu">Employee</span></a></li>
+                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="app-calendar.html"
+                                aria-expanded="false"><i data-feather="credit-card" class="feather-icon"></i><span
+                                    class="hide-menu">Manage Fees</span></a></li>
+
+                        <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
+                                aria-expanded="false"><i data-feather="file" class="feather-icon"></i><span
+                                    class="hide-menu">Examination </span></a>
+                            <ul aria-expanded="false" class="collapse  first-level base-level-line">
+                                <li class="sidebar-item"><a href="table-basic.html" class="sidebar-link"><span
+                                            class="hide-menu">Exam Time Table
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="table-dark-basic.html" class="sidebar-link"><span
+                                            class="hide-menu"> Seating Plan
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="table-sizing.html" class="sidebar-link"><span
+                                            class="hide-menu">
+                                            Marks Manager
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="table-layout-coloured.html" class="sidebar-link"><span
+                                            class="hide-menu">Marks Entry
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="table-datatable-basic.html" class="sidebar-link"><span
+                                            class="hide-menu">
+                                            Report Card Engine
+                                        </span></a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
+                                aria-expanded="false"><i data-feather="calendar" class="feather-icon"></i><span
+                                    class="hide-menu">Calender </span></a>
+                            <ul aria-expanded="false" class="collapse  first-level base-level-line">
+                                <li class="sidebar-item"><a href="chart-morris.html" class="sidebar-link"><span
+                                            class="hide-menu"> Morris Chart
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="chart-chart-js.html" class="sidebar-link"><span
+                                            class="hide-menu"> ChartJs
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="chart-knob.html" class="sidebar-link"><span
+                                            class="hide-menu">
+                                            Knob Chart
+                                        </span></a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="app-calendar.html"
+                                aria-expanded="false"><i data-feather="file" class="feather-icon"></i><span
+                                    class="hide-menu">Reports</span></a></li>
+                        <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
+                                aria-expanded="false"><i data-feather="bell" class="feather-icon"></i><span
+                                    class="hide-menu">Announcements </span></a>
+                            <ul aria-expanded="false" class="collapse  first-level base-level-line">
+                                <li class="sidebar-item"><a href="{% url 'manage-circular' %}"
+                                        class="sidebar-link"><span class="hide-menu"> Notice Board
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="ui-modals.html" class="sidebar-link"><span
+                                            class="hide-menu">Events</span></a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
+                                aria-expanded="false"><i data-feather="globe" class="feather-icon"></i><span
+                                    class="hide-menu">Web Admin </span></a>
+                            <ul aria-expanded="false" class="collapse  first-level base-level-line">
+                                <li class="sidebar-item"><a href="{% url 'manage-circular' %}"
+                                        class="sidebar-link"><span class="hide-menu"> Manage Circular
+                                        </span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="ui-modals.html" class="sidebar-link"><span
+                                            class="hide-menu">Photo Gallery</span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="ui-tab.html" class="sidebar-link"><span
+                                            class="hide-menu"> Tabs </span></a></li>
+                                <li class="sidebar-item"><a href="ui-tooltip-popover.html" class="sidebar-link"><span
+                                            class="hide-menu"> Tooltip &
+                                            Popover</span></a></li>
+                                <li class="sidebar-item"><a href="ui-notification.html" class="sidebar-link"><span
+                                            class="hide-menu">Notification</span></a></li>
+                                <li class="sidebar-item"><a href="ui-progressbar.html" class="sidebar-link"><span
+                                            class="hide-menu">Progressbar</span></a></li>
+                                <li class="sidebar-item"><a href="ui-typography.html" class="sidebar-link"><span
+                                            class="hide-menu">Typography</span></a></li>
+                                <li class="sidebar-item"><a href="ui-bootstrap.html" class="sidebar-link"><span
+                                            class="hide-menu">Bootstrap
+                                            UI</span></a></li>
+                                <li class="sidebar-item"><a href="ui-breadcrumb.html" class="sidebar-link"><span
+                                            class="hide-menu">Breadcrumb</span></a></li>
+                                <li class="sidebar-item"><a href="ui-list-media.html" class="sidebar-link"><span
+                                            class="hide-menu">List
+                                            Media</span></a></li>
+                                <li class="sidebar-item"><a href="ui-grid.html" class="sidebar-link"><span
+                                            class="hide-menu"> Grid </span></a></li>
+                                <li class="sidebar-item"><a href="ui-carousel.html" class="sidebar-link"><span
+                                            class="hide-menu">
+                                            Carousel</span></a></li>
+                                <li class="sidebar-item"><a href="ui-scrollspy.html" class="sidebar-link"><span
+                                            class="hide-menu">
+                                            Scrollspy</span></a></li>
+                                <li class="sidebar-item"><a href="ui-toasts.html" class="sidebar-link"><span
+                                            class="hide-menu"> Toasts</span></a>
+                                </li>
+                                <li class="sidebar-item"><a href="ui-spinner.html" class="sidebar-link"><span
+                                            class="hide-menu"> Spinner </span></a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="{% url 'signout' %}"
+                                aria-expanded="false"><i data-feather="log-out" class="feather-icon"></i><span
+                                    class="hide-menu">Logout</span></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+        {% block content %}
+
+
+        {% endblock %}
+    </div>
+<script>
+window.addEventListener('load', () => {
+    document.body.classList.add('loaded');
+});
+</script>
+    <script src="{% static 'assets/libs/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% static 'assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'dist/js/app-style-switcher.js' %}"></script>
+    <script src="{% static 'dist/js/feather.min.js' %}"></script>
+    <script src="{% static 'assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js' %}"></script>
+    <script src="{% static 'dist/js/sidebarmenu.js' %}"></script>
+    <script src="{% static 'dist/js/custom.min.js' %}"></script>
+    <script src="{% static 'assets/extra-libs/c3/d3.min.js' %}"></script>
+    <script src="{% static 'assets/extra-libs/c3/c3.min.js' %}"></script>
+    <script src="{% static 'assets/libs/chartist/dist/chartist.min.js' %}"></script>
+    <script src="{% static 'assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js' %}"></script>
+    <script src="{% static 'assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js' %}"></script>
+    <script src="{% static 'assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js' %}"></script>
+    <script src="{% static 'dist/js/pages/dashboards/dashboard1.min.js' %}"></script>
+</body>
+
+</html>

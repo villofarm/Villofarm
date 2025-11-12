@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup</title>
+</head>
+<body>
+<h2>Signup</h2>
+<form method="POST">
+    {% csrf_token %}
+<input type="text" name="first_name" placeholder="First Name" required value="{{ first_name|default:'' }}"><br>
+<input type="text" name="last_name" placeholder="Last Name" required value="{{ last_name|default:'' }}"><br>
+<input type="text" name="username" placeholder="Username" required value="{{ username|default:'' }}"><br>
+<input type="email" name="email" placeholder="Email" required value="{{ email|default:'' }}"><br>
+<input type="password" name="password" placeholder="Password" required><br>
+<input type="password" name="confirm_password" placeholder="Confirm Password" required><br>
+
+    <button type="submit">Signup</button>
+</form>
+<a href="{% url 'signin' %}">Already have an account? Signin</a>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+</body>
+</html>

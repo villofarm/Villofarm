@@ -1,0 +1,540 @@
+{% extends 'skyvite/base.html' %}
+{% load static %}
+
+{% block title %}Add Student{% endblock %}
+
+{% block content %}
+<style>
+    .dsb-heading {
+        padding: 12px 20px;
+        font-size: 16px;
+        color: #444;
+        background-color: #f2f7ff;
+        border-bottom: 1px solid #e4e9f2;
+        font-weight: 600;
+        border-radius: 5px 5px 0 0;
+    }
+
+    .student-admission-card {
+        margin-bottom: 1.5rem;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid #e4e9f2;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+    }
+
+    .student-admission-card .card-body {
+        padding: 0;
+    }
+
+    .p-4 {
+        padding: 1.5rem !important;
+    }
+
+    label {
+        font-weight: 500;
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .form-control {
+        border-radius: 6px;
+        font-size: 14px;
+        border: 1px solid #e2e2e2 !important;
+    }
+
+    #profilepic {
+        display: none;
+    }
+
+    .std-preview {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+        border: 1px dashed #ddd;
+        border-radius: 8px;
+        background-color: #fafafa;
+    }
+
+    .std-preview img {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
+        border: 2px solid #e4e9f2;
+    }
+    .admission_form p{
+        font-size: 16px;
+        color: #555;
+    }
+    .admission_form p img{
+        width: 20px;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="d-md-flex d-block align-items-center justify-content-between mb-4">
+                <div class="my-auto">
+                    <h3 class="mb-1 pagename">Add Student</h3>
+                    <nav>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                            <li class="breadcrumb-item">Students</li>
+                            <li class="breadcrumb-item active" aria-current="page">Add Student</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="admission_form">
+                    <!-- <a href="{% url 'student_list' %}" class="btn btn-sm btn-primary mb-3 mb-md-0">Student List</a> -->
+                     <p>Download admission form from here<a href="#" onclick="printAdmissionForm(); return false;"><img style="margin-left: 5px;" src="{% static 'assets/images/pdf.png' %}" alt=""></a></p>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Student Information -->
+                    <div class="student-admission-card">
+                        <div class="dsb-heading">Student Information</div>
+                        <div class="p-4">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="session">Academic Year</label>
+                                            <select id="session" name="session" class="form-control" required>
+                                                <option value="">Select Session</option>
+                                                {% for s in form.session.field.queryset %}
+                                                <option value="{{ s.id }}">{{ s.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="admission_number">Admission Number</label>
+                                            <input type="text" class="form-control" id="admission_number"
+                                                name="admission_number" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="admission_date">Admission Date</label>
+                                            <input type="date" class="form-control" id="admission_date"
+                                                name="admission_date" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3 mt-2">
+                                        <div class="col-md-4">
+                                            <label for="first_name">First Name</label>
+                                            <input type="text" class="form-control" id="first_name" name="first_name"
+                                                required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="surname">Last Name</label>
+                                            <input type="text" class="form-control" id="surname" name="surname"
+                                                required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="student_class">Class</label>
+                                            <select id="student_class" class="form-control" name="student_class">
+                                                <option value="">Select Class</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="std-preview">
+                                        <img id="std-profile-preview"
+                                            src="{% static 'assets/images/user_profile.jpg' %}" alt="Student Profile" />
+                                        <label for="profilepic" class="btn btn-sm btn-outline-primary mt-2">Upload
+                                            Profile</label>
+                                        <input accept="image/*" type="file" id="profilepic" name="profilepic" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-3">
+                                    <label for="section">Section</label>
+                                    <select id="section" class="form-control" name="section">
+                                        <option value="">Select Section</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="roll_no">Roll Number</label>
+                                    <input type="text" class="form-control" id="roll_no" name="roll_no" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="status">Status</label>
+                                    <select id="status" name="status" class="form-control" required>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="gender">Gender</label>
+                                    <select id="gender" name="gender" class="form-control" required>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-3">
+                                    <label for="dob">Date of Birth</label>
+                                    <input type="date" class="form-control" id="dob" name="dob" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="blood_group">Blood Group</label>
+                                    <input type="text" class="form-control" id="blood_group" name="blood_group">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="house">House</label>
+                                    <input type="text" class="form-control" id="house" name="house">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="religion">Religion</label>
+                                    <input type="text" class="form-control" id="religion" name="religion">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-3">
+                                    <label for="category">Category</label>
+                                    <select id="category" name="category" class="form-control" required>
+                                        <option value="General">General</option>
+                                        <option value="OBC">OBC</option>
+                                        <option value="SC">SC</option>
+                                        <option value="ST">ST</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="contact_no">Contact Number</label>
+                                    <input type="text" class="form-control" id="contact_no" name="contact_no">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parents Information -->
+                    <div class="student-admission-card">
+                        <div class="dsb-heading">Parents Information</div>
+                        <div class="p-4">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="father_name">Father's Name</label>
+                                    <input type="text" class="form-control" id="father_name" name="father_name">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="father_phone">Father's Phone</label>
+                                    <input type="text" class="form-control" id="father_phone" name="father_phone">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="father_email">Father's Email</label>
+                                    <input type="email" class="form-control" id="father_email" name="father_email">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="father_occupation">Father's Occupation</label>
+                                    <input type="text" class="form-control" id="father_occupation"
+                                        name="father_occupation">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-3">
+                                    <label for="mother_name">Mother's Name</label>
+                                    <input type="text" class="form-control" id="mother_name" name="mother_name">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="mother_phone">Mother's Phone</label>
+                                    <input type="text" class="form-control" id="mother_phone" name="mother_phone">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="mother_email">Mother's Email</label>
+                                    <input type="email" class="form-control" id="mother_email" name="mother_email">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="mother_occupation">Mother's Occupation</label>
+                                    <input type="text" class="form-control" id="mother_occupation"
+                                        name="mother_occupation">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Last School -->
+                    <div class="student-admission-card">
+                        <div class="dsb-heading">Last School</div>
+                        <div class="p-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="previous_school_name">Last School Name</label>
+                                    <input type="text" class="form-control" id="previous_school_name"
+                                        name="previous_school_name">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="previous_school_address">Last School Address</label>
+                                    <textarea id="previous_school_address" name="previous_school_address"
+                                        class="form-control w-100"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Address -->
+                    <div class="student-admission-card">
+                        <div class="dsb-heading">Address</div>
+                        <div class="p-4">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="address">Address</label>
+                                    <textarea id="address" class="form-control w-100" name="address"></textarea>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="state">State</label>
+                                    <select id="state" name="state" class="form-control" required>
+                                        <option value="">Select State</option>
+                                        <option>Andhra Pradesh</option>
+                                        <option>Arunachal Pradesh</option>
+                                        <option>Assam</option>
+                                        <option>Bihar</option>
+                                        <option>Chhattisgarh</option>
+                                        <option>Delhi</option>
+                                        <option>Goa</option>
+                                        <option>Gujarat</option>
+                                        <option>Haryana</option>
+                                        <option>Himachal Pradesh</option>
+                                        <option>Jharkhand</option>
+                                        <option>Karnataka</option>
+                                        <option>Kerala</option>
+                                        <option>Madhya Pradesh</option>
+                                        <option>Maharashtra</option>
+                                        <option>Manipur</option>
+                                        <option>Meghalaya</option>
+                                        <option>Mizoram</option>
+                                        <option>Nagaland</option>
+                                        <option>Odisha</option>
+                                        <option>Punjab</option>
+                                        <option>Rajasthan</option>
+                                        <option>Sikkim</option>
+                                        <option>Tamil Nadu</option>
+                                        <option>Telangana</option>
+                                        <option>Tripura</option>
+                                        <option>Uttar Pradesh</option>
+                                        <option>Uttarakhand</option>
+                                        <option>West Bengal</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="pincode">Pincode</label>
+                                    <input type="text" class="form-control" id="pincode" name="pincode">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transport -->
+                    <div class="student-admission-card">
+                        <div class="dsb-heading">Transport</div>
+                        <div class="p-4">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="transport_route">Transport Route</label>
+                                    <input type="text" class="form-control" id="transport_route" name="transport_route">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="vehicle_no">Vehicle Number</label>
+                                    <input type="text" class="form-control" id="vehicle_no" name="vehicle_no">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="pickup_point">Pickup Point</label>
+                                    <input type="text" class="form-control" id="pickup_point" name="pickup_point">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bank Details -->
+                    <div class="student-admission-card">
+                        <div class="dsb-heading">Bank Details</div>
+                        <div class="p-4">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="bank_name">Bank Name</label>
+                                    <input type="text" class="form-control" id="bank_name" name="bank_name">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="account_no">Account Number</label>
+                                    <input type="text" class="form-control" id="account_no" name="account_no">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="branch">Branch</label>
+                                    <input type="text" class="form-control" id="branch" name="branch">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="ifsc">IFSC Code</label>
+                                    <input type="text" class="form-control" id="ifsc" name="ifsc">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documents -->
+                    <div class="student-admission-card">
+                        <div class="dsb-heading">Documents</div>
+                        <div class="p-4">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="aadhar">Aadhar Card</label>
+                                    <div class="custom-file-upload">
+                                        <input type="file" class="form-control d-none" id="aadhar" name="aadhar"
+                                            accept="application/pdf,image/*">
+                                        <label for="aadhar" class="btn btn-sm btn-outline-primary w-100">Upload
+                                            Aadhar</label>
+                                        <small id="aadhar-name" class="text-muted d-block mt-1"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="pan">PAN Card</label>
+                                    <div class="custom-file-upload">
+                                        <input type="file" class="form-control d-none" id="pan" name="pan"
+                                            accept="application/pdf,image/*">
+                                        <label for="pan" class="btn btn-sm btn-outline-primary w-100">Upload PAN</label>
+                                        <small id="pan-name" class="text-muted d-block mt-1"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="marksheet">Last Year Marksheet</label>
+                                    <div class="custom-file-upload">
+                                        <input type="file" class="form-control d-none" id="marksheet" name="marksheet"
+                                            accept="application/pdf,image/*">
+                                        <label for="marksheet" class="btn btn-sm btn-outline-primary w-100">Upload
+                                            Marksheet</label>
+                                        <small id="marksheet-name" class="text-muted d-block mt-1"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="tc">T.C.</label>
+                                    <div class="custom-file-upload">
+                                        <input type="file" class="form-control d-none" id="tc" name="tc"
+                                            accept="application/pdf,image/*">
+                                        <label for="tc" class="btn btn-sm btn-outline-primary w-100">Upload T.C.</label>
+                                        <small id="tc-name" class="text-muted d-block mt-1"></small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="character_certificate">Character Certificate</label>
+                                    <div class="custom-file-upload">
+                                        <input type="file" class="form-control d-none" id="character_certificate"
+                                            name="character_certificate" accept="application/pdf,image/*">
+                                        <label for="character_certificate"
+                                            class="btn btn-sm btn-outline-primary w-100">Upload
+                                            Character Certificate</label>
+                                        <small id="character_certificate-name" class="text-muted d-block mt-1"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 text-end mt-3">
+                        <button style="border-radius: 5px;" type="submit" class="btn btn-primary">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function printAdmissionForm() {
+    fetch(`/admission-form/`)
+    .then(res => res.json())
+    .then(data => {
+        const printWindow = window.open('', '', 'width=800,height=600');
+        printWindow.document.write(data.html);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+    })
+    .catch(err => console.error(err));
+}
+</script>
+<script>
+    ["aadhar", "pan", "marksheet", "tc", "character_certificate"].forEach(id => {
+        const input = document.getElementById(id);
+        const nameDisplay = document.getElementById(`${id}-name`);
+
+        input.addEventListener("change", (e) => {
+            if (e.target.files.length > 0) {
+                nameDisplay.textContent = e.target.files[0].name;
+            } else {
+                nameDisplay.textContent = "No file chosen";
+            }
+        });
+    });
+</script>
+<script>
+    // Profile picture preview
+    const input = document.getElementById("profilepic");
+    const image = document.getElementById("std-profile-preview");
+
+    input.addEventListener("change", (e) => {
+        if (e.target.files.length) {
+            const src = URL.createObjectURL(e.target.files[0]);
+            image.src = src;
+        }
+    });
+
+    // Dynamic Class & Section loading
+    const sessionSelect = document.getElementById('session');
+    const classSelect = document.getElementById('student_class');
+    const sectionSelect = document.getElementById('section');
+
+    // When session changes → update classes
+    if (sessionSelect) {
+        sessionSelect.addEventListener('change', function () {
+            const sessionId = this.value;
+            classSelect.innerHTML = '<option>Loading...</option>';
+            sectionSelect.innerHTML = '<option value="">Select Section</option>'; // reset sections
+
+            fetch(`/get-classes/${sessionId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    classSelect.innerHTML = '<option value="">Select Class</option>';
+                    data.forEach(c => {
+                        classSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                    });
+                });
+        });
+    }
+
+    // When class changes → update sections
+    if (classSelect) {
+        classSelect.addEventListener('change', function () {
+            const classId = this.value;
+            sectionSelect.innerHTML = '<option>Loading...</option>';
+
+            fetch(`/get-sections/${classId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    sectionSelect.innerHTML = '<option value="">Select Section</option>';
+                    data.forEach(s => {
+                        sectionSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+                    });
+                });
+        });
+    }
+</script>
+
+{% endblock %}

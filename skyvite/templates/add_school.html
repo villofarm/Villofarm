@@ -1,0 +1,374 @@
+{% extends 'skyvite/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | {% endblock %}
+
+{% block content %}
+<style>
+    .getting-started {
+        background: url({% static 'assets/images/welcome-onboard.svg' %}) center no-repeat;
+        background-size: cover;
+        padding: 9px 0 0;
+    }
+
+    .welcomeuser {
+        color: #333;
+        font-size: 22px;
+        margin-top: 30px;
+        margin-bottom: 10px;
+        font-weight: 500;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .welcomenote {
+        color: #333;
+        font-size: 16px;
+        margin-bottom: 30px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .add-institute-card {
+        max-width: 750px;
+        margin: 0 auto;
+        background: #408dfb;
+    }
+
+    .startmessage {
+        color: #fff;
+        background: #408dfb;
+        font-size: 18px;
+        margin-bottom: 0;
+        padding: 8px 0;
+        text-align: center;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .form-step {
+        display: none;
+    }
+
+    .form-step.active {
+        display: block;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .progress-label {
+        text-align: center;
+        font-size: 15px;
+        color: #555;
+        font-weight: 500;
+        margin-top: 10px;
+    }
+
+    .progress-container {
+        width: 100%;
+        background: #e0e0e0;
+        border-radius: 10px;
+        height: 6px;
+        margin: 10px 0 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        width: 0%;
+        height: 6px;
+        background: #408dfb;
+        border-radius: 10px;
+        transition: width 0.4s ease;
+    }
+
+    .prevbtn {
+        background: #e2e2e2;
+        color: #333;
+        padding: 3px 10px;
+        font-size: 15px;
+        border: 2px solid #e2e2e2;
+        border-radius: 5px;
+        transition: 0.4s;
+    }
+
+    .saveschoolbtn,
+    .nextbtn {
+        background: #408dfb;
+        color: #fff;
+        padding: 3px 10px;
+        font-size: 15px;
+        border: 2px solid #408dfb;
+        border-radius: 5px;
+        transition: 0.4s;
+    }
+
+    .form-control {
+        border-radius: 6px;
+        font-size: 14px;
+        border: 1px solid #e2e2e2 !important;
+    }
+
+    .swal2-error,
+    .swal2-warning {
+        display: none !important;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="getting-started">
+        <div class="column-center">
+            <div class="gs-description pe-9">
+                <h3 class="text-center welcomeuser">Welcome {{ request.user.first_name }}!</h3>
+                <p class="text-center welcomenote pb-7">
+                    Let's get started by setting up your school to unlock all features.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid mt-4">
+        <div class="card add-institute-card">
+            <h4 class="startmessage">Get started with Skyvite</h4>
+            <div class="card-body" style="background: #fff; border-radius: 12px 12px 0 0;">
+                <div id="stepLabel" class="progress-label">Step 1 of 3</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <form method="post" enctype="multipart/form-data" id="multiStepForm">
+                    {% csrf_token %}
+
+                    <!-- Step 1 -->
+                    <div class="form-step active" id="step1">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Select Board</label>
+                                    <select name="board" class="form-control" required>
+                                        <option value="">Select Board</option>
+                                        <option value="CBSE">CBSE</option>
+                                        <option value="ICSE">ICSE</option>
+                                        <option value="IB">IB</option>
+                                        <option value="Other State">Other State Board</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_name" class="form-label">Institute Name</label>
+                                    <input type="text" name="name" class="form-control" id="id_name" placeholder="Enter School Name" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_address" class="form-label">Address</label>
+                            <textarea name="address" class="form-control" id="id_address" rows="3" placeholder="Enter Address" required></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_city" class="form-label">City</label>
+                                    <input type="text" name="city" class="form-control" id="id_city" readonly required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_state" class="form-label">State</label>
+                                    <input type="text" name="state" class="form-control" id="id_state" readonly required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_pincode" class="form-label">Pincode</label>
+                                    <input type="text" name="pincode" class="form-control" id="id_pincode" placeholder="Enter Pincode" maxlength="6" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="id_school_code" class="form-label">School Code</label>
+                                    <input type="text" name="school_code" class="form-control" id="id_school_code" placeholder="Enter School Code" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="button" class="btn btn-primary nextbtn" id="next1">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="form-step" id="step2">
+                        <div class="mb-3">
+                            <label for="id_principal_name" class="form-label">Principal Name</label>
+                            <input type="text" name="principal_name" class="form-control" id="id_principal_name" placeholder="Enter Principal Name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_mobile_no" class="form-label">Mobile Number</label>
+                            <input type="text" name="mobile_no" class="form-control" id="id_mobile_no" placeholder="Enter Mobile Number" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" id="id_email" placeholder="Enter Email" required>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn prevbtn" id="prev2">Previous</button>
+                            <button type="button" class="btn btn-primary nextbtn" id="next2">Next</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="form-step" id="step3">
+                        <div class="mb-3">
+                            <label for="id_photo" class="form-label">School Photo</label>
+                            <input type="file" name="photo" class="form-control" id="id_photo">
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_school_logo" class="form-label">School Logo</label>
+                            <input type="file" name="school_logo" class="form-control" id="id_school_logo">
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_principal_signature" class="form-label">Principal Signature</label>
+                            <input type="file" name="principal_signature" class="form-control" id="id_principal_signature">
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn prevbtn" id="prev3">Previous</button>
+                            <button type="submit" class="saveschoolbtn">Save School</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.getElementById("multiStepForm").addEventListener("submit", function(e) {
+    // Temporarily enable all hidden inputs before submit
+    document.querySelectorAll(".form-step input, .form-step select, .form-step textarea").forEach(el => {
+        el.disabled = false;
+    });
+});
+</script>
+
+<!-- ✅ Auto-fetch City & State -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const pincodeInput = document.getElementById("id_pincode");
+        const cityInput = document.getElementById("id_city");
+        const stateInput = document.getElementById("id_state");
+
+        pincodeInput.addEventListener("keyup", function () {
+            const pincode = this.value.trim();
+
+            if (pincode.length === 6 && /^[0-9]{6}$/.test(pincode)) {
+                cityInput.value = "Fetching...";
+                stateInput.value = "Fetching...";
+
+                fetch(`https://api.postalpincode.in/pincode/${pincode}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data[0].Status === "Success") {
+                            const postOffice = data[0].PostOffice[0];
+                            cityInput.value = postOffice.District;
+                            stateInput.value = postOffice.State;
+                        } else {
+                            cityInput.value = "";
+                            stateInput.value = "";
+                            Swal.fire({
+                                icon: "error",
+                                title: "Invalid Pincode",
+                                text: "Please enter a valid 6-digit Indian pincode.",
+                                confirmButtonColor: "#408dfb"
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        cityInput.value = "";
+                        stateInput.value = "";
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Network Error",
+                            text: "⚠️ Something went wrong while fetching city/state. Please try again.",
+                            confirmButtonColor: "#408dfb"
+                        });
+                    });
+            } else if (pincode.length < 6) {
+                cityInput.value = "";
+                stateInput.value = "";
+            }
+        });
+    });
+</script>
+
+<!-- ✅ Step Navigation -->
+<script>
+    const steps = document.querySelectorAll(".form-step");
+    const progressBar = document.getElementById("progressBar");
+    const stepLabel = document.getElementById("stepLabel");
+    let currentStep = 0;
+
+    function showStep(step) {
+        steps.forEach((el, index) => el.classList.toggle("active", index === step));
+        const progress = ((step) / (steps.length - 1)) * 100;
+        progressBar.style.width = `${progress}%`;
+        stepLabel.textContent = `Step ${step + 1} of ${steps.length}`;
+    }
+
+    function validateStep(stepIndex) {
+        const currentFields = steps[stepIndex].querySelectorAll("input[required], select[required], textarea[required]");
+        for (let field of currentFields) {
+            if (!field.value.trim()) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "⚠️ Incomplete Step ",
+                    text: "Please fill out all required fields before continuing.",
+                    confirmButtonColor: "#408dfb"
+                });
+                field.focus();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    document.getElementById("next1").addEventListener("click", () => {
+        if (validateStep(0)) {
+            currentStep = 1;
+            showStep(currentStep);
+        }
+    });
+
+    document.getElementById("next2").addEventListener("click", () => {
+        if (validateStep(1)) {
+            currentStep = 2;
+            showStep(currentStep);
+        }
+    });
+
+    document.getElementById("prev2").addEventListener("click", () => {
+        currentStep = 0;
+        showStep(currentStep);
+    });
+
+    document.getElementById("prev3").addEventListener("click", () => {
+        currentStep = 1;
+        showStep(currentStep);
+    });
+</script>
+{% endblock %}

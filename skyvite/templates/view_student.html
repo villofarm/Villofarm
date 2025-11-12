@@ -1,0 +1,289 @@
+{% extends 'skyvite/base.html' %}
+{% load static %}
+
+{% block title %}View Student{% endblock %}
+
+{% block content %}
+<style>
+  .student_image {
+    object-fit: cover !important;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 150px;
+    height: 150px;
+  }
+  .stdname{
+    text-align: center;
+    font-family: Sora;
+    background: linear-gradient(92deg, #005bab 40.95% 40.95%, #f6691f 70.55% 70.55%);
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    font-weight: 500;
+    margin: 0;
+    margin-top: 15px;
+  }
+  .stdclass{
+    text-align: center;
+    font-size: 16px;
+    margin-top: 5px;
+    color: #4c5eba;
+    margin: 0;
+    margin-top: 8px;
+  }
+  .fourcardorangered {
+        border-bottom: 3px solid orangered;
+        transition: all 0.3s ease;
+    }
+
+    .fourcardorangered:hover {
+        box-shadow: 0 4px 8px rgba(255, 69, 0, 0.2);
+        transform: translateY(-2px);
+    }
+</style>
+<div class="page-wrapper">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="d-md-flex d-block align-items-center justify-content-between mb-3">
+        <div class="my-auto">
+          <h3 class="mb-1">Student Details</h3>
+          <nav>
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="{% url 'student_list' %}">Students</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">Student Details</li>
+            </ol>
+          </nav>
+        </div>
+        <div class="text-center">
+          <a href="{% url 'student_list' %}"><i data-feather="arrow-left"></i> Go Back</a>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3 d-flex flex-column align-items-center justify-content-center">
+               {% if student.profilepic %}
+              <img src="{{ student.profilepic.url }}" class="student_image">
+              {% else %}
+              <img src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png" class="student_image">
+              {% endif %}
+
+              <h3 class="text-center stdname">{{ student.first_name }} {{ student.surname }}</h3>
+              <h4 class="text-center stdclass">{{ student.student_class.name }} {{ student.section.name }}</h4>
+            </div>
+            <div class="col-md-9">
+
+            </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <!-- Profile Picture -->
+            <div class="text-center mb-4">
+             
+            </div>
+
+            <!-- Personal Information -->
+            <h4 class="text-primary">Personal Information</h4>
+            <table class="table table-bordered">
+              <tr>
+                <th>Gender</th>
+                <td>{{ student.gender }}</td>
+                <th>Date of Birth</th>
+                <td>{{ student.dob }}</td>
+              </tr>
+              <tr>
+                <th>Blood Group</th>
+                <td>{{ student.blood_group }}</td>
+                <th>Status</th>
+                <td>{{ student.status|capfirst }}</td>
+              </tr>
+            </table>
+
+            <!-- Academic Details -->
+            <h4 class="text-success mt-4">Academic Details</h4>
+            <table class="table table-bordered">
+              <tr>
+                <th>Academic Year</th>
+                <td>{{ student.session.name }}</td>
+                <th>Class</th>
+                <td>{{ student.student_class.name }}</td>
+              </tr>
+              <tr>
+                <th>Section</th>
+                <td>{{ student.section.name }}</td>
+                <th>Admission Number</th>
+                <td>{{ student.admission_number }}</td>
+              </tr>
+              <tr>
+                <th>Roll Number</th>
+                <td>{{ student.roll_no }}</td>
+                <th>Admission Date</th>
+                <td>{{ student.admission_date }}</td>
+              </tr>
+            </table>
+
+            <!-- Parent Information -->
+            <h4 class="text-warning mt-4">Parent Information</h4>
+            <table class="table table-bordered">
+              <tr>
+                <th>Father Name</th>
+                <td>{{ student.father_name }}</td>
+                <th>Mother Name</th>
+                <td>{{ student.mother_name }}</td>
+              </tr>
+              <tr>
+                <th>Father Phone</th>
+                <td>{{ student.father_phone }}</td>
+                <th>Mother Phone</th>
+                <td>{{ student.mother_phone }}</td>
+              </tr>
+              <tr>
+                <th>Father Email</th>
+                <td>{{ student.father_email }}</td>
+                <th>Mother Email</th>
+                <td>{{ student.mother_email }}</td>
+              </tr>
+              <tr>
+                <th>Father Occupation</th>
+                <td>{{ student.father_occupation }}</td>
+                <th>Mother Occupation</th>
+                <td>{{ student.mother_occupation }}</td>
+              </tr>
+            </table>
+
+            <!-- Other Information -->
+            <h4 class="text-info mt-4">Other Information</h4>
+            <table class="table table-bordered">
+              <tr>
+                <th>House</th>
+                <td>{{ student.house }}</td>
+                <th>Religion</th>
+                <td>{{ student.religion }}</td>
+              </tr>
+              <tr>
+                <th>Category</th>
+                <td>{{ student.category }}</td>
+                <th>Contact No</th>
+                <td>{{ student.contact_no }}</td>
+              </tr>
+              <tr>
+                <th>Address</th>
+                <td colspan="3">{{ student.address }}</td>
+              </tr>
+              <tr>
+                <th>State</th>
+                <td>{{ student.state }}</td>
+                <th>Pincode</th>
+                <td>{{ student.pincode }}</td>
+              </tr>
+            </table>
+
+            <!-- Previous School Info -->
+            <h4 class="text-secondary mt-4">Previous School Details</h4>
+            <table class="table table-bordered">
+              <tr>
+                <th>School Name</th>
+                <td>{{ student.previous_school_name }}</td>
+                <th>School Address</th>
+                <td>{{ student.previous_school_address }}</td>
+              </tr>
+            </table>
+
+            <!-- Transport Info -->
+            <h4 class="text-info mt-4">Transport Information</h4>
+            <table class="table table-bordered">
+              <tr>
+                <th>Transport Route</th>
+                <td>{{ student.transport_route }}</td>
+                <th>Vehicle Number</th>
+                <td>{{ student.vehicle_no }}</td>
+              </tr>
+              <tr>
+                <th>Pickup Point</th>
+                <td colspan="3">{{ student.pickup_point }}</td>
+              </tr>
+            </table>
+
+            <!-- Bank Details -->
+            <h4 class="text-primary mt-4">Bank Details</h4>
+            <table class="table table-bordered">
+              <tr>
+                <th>Bank Name</th>
+                <td>{{ student.bank_name }}</td>
+                <th>Branch</th>
+                <td>{{ student.branch }}</td>
+              </tr>
+              <tr>
+                <th>Account Number</th>
+                <td>{{ student.account_no }}</td>
+                <th>IFSC Code</th>
+                <td>{{ student.ifsc_code }}</td>
+              </tr>
+            </table>
+
+            <!-- Uploaded Documents -->
+            <h4 class="text-dark mt-4">Uploaded Documents</h4>
+            <table class="table table-bordered">
+              <tr>
+                <th>Aadhaar</th>
+                <td>
+                  {% if student.aadhar %}
+                  <a href="{{ student.aadhar.url }}" target="_blank" class="btn btn-outline-primary btn-sm">View</a>
+                  {% else %} Not uploaded {% endif %}
+                </td>
+                <th>PAN</th>
+                <td>
+                  {% if student.pan %}
+                  <a href="{{ student.pan.url }}" target="_blank" class="btn btn-outline-primary btn-sm">View</a>
+                  {% else %} Not uploaded {% endif %}
+                </td>
+              </tr>
+              <tr>
+                <th>Marksheet</th>
+                <td>
+                  {% if student.marksheet %}
+                  <a href="{{ student.marksheet.url }}" target="_blank" class="btn btn-outline-primary btn-sm">View</a>
+                  {% else %} Not uploaded {% endif %}
+                </td>
+                <th>Transfer Certificate</th>
+                <td>
+                  {% if student.tc %}
+                  <a href="{{ student.tc.url }}" target="_blank" class="btn btn-outline-primary btn-sm">View</a>
+                  {% else %} Not uploaded {% endif %}
+                </td>
+              </tr>
+              <tr>
+                <th>Character Certificate</th>
+                <td colspan="3">
+                  {% if student.character_certificate %}
+                  <a href="{{ student.character_certificate.url }}" target="_blank"
+                    class="btn btn-outline-primary btn-sm">View</a>
+                  {% else %} Not uploaded {% endif %}
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

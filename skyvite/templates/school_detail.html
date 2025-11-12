@@ -1,0 +1,179 @@
+{% extends 'skyvite/base.html' %}
+{% load static %}
+
+{% block title %}School Detail{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+  <div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>School Details</h2>
+      <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editSchoolModal">
+        <i class="bi bi-pencil-square"></i> Edit
+      </button>
+    </div>
+
+    {% if school %}
+      <div class="card shadow-sm p-4">
+
+        <!-- School Photo and Logo -->
+        <div style="position: relative;">
+          {% if school.photo %}
+            <img id="school-photo" src="{{ school.photo.url }}" alt="School Photo"
+                 class="w-100 me-3" style="max-height: 300px; object-fit: cover;">
+          {% else %}
+            <img id="school-photo"
+                 src="https://via.placeholder.com/900x300?text=School+Photo"
+                 alt="School Photo" class="w-100" style="max-height: 300px; object-fit: cover;">
+          {% endif %}
+
+          <div style="position: absolute; left: 10px; bottom: 10px;">
+            {% if school.school_logo %}
+              <img id="school-logo" src="{{ school.school_logo.url }}" alt="School Logo"
+                   style="max-width: 200px; border-radius: 100%; padding: 10px;
+                   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;">
+            {% else %}
+              <img id="school-logo"
+                   src="https://via.placeholder.com/200?text=Logo"
+                   alt="School Logo" class="img-thumbnail" width="200">
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- School Info Table -->
+        <table class="table table-bordered mt-4">
+          <tr><th>School Name</th><td id="school-name">{{ school.name }}</td></tr>
+          <tr><th>School Code</th><td id="school-code" class="fw-bold text-primary">{{ school.school_code }}</td></tr>
+          <tr><th>Board</th><td id="school-board">{{ school.board }}</td></tr>
+          <tr><th>Address</th><td id="school-address">{{ school.address }}</td></tr>
+          <tr><th>City</th><td id="school-city">{{ school.city }}</td></tr>
+          <tr><th>State</th><td id="school-state">{{ school.state }}</td></tr>
+          <tr><th>Pincode</th><td id="school-pincode">{{ school.pincode }}</td></tr>
+          <tr><th>Principal Name</th><td id="school-principal">{{ school.principal_name }}</td></tr>
+          <tr><th>Mobile No</th><td id="school-mobile">{{ school.mobile_no }}</td></tr>
+          <tr><th>Email</th><td id="school-email">{{ school.email }}</td></tr>
+          <tr>
+            <th>Principal Signature</th>
+            <td>
+              {% if school.principal_signature %}
+                <img id="principal-signature" src="{{ school.principal_signature.url }}"
+                     alt="Principal Signature"
+                     style="max-width:250px; max-height:120px; border:1px solid #ddd; border-radius:6px;">
+              {% else %}
+                <span class="text-muted fst-italic">No signature uploaded</span>
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+    {% else %}
+      <p>No school details found.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Edit School Modal -->
+<div class="modal fade" id="editSchoolModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="editSchoolForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title">Edit School</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          {{ form.as_p }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.getElementById("editSchoolForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    let formData = new FormData(this);
+
+    fetch("{% url 'update_school_ajax' %}", {
+        method: "POST",
+        headers: {"X-CSRFToken": "{{ csrf_token }}"},
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            // Update visible data
+            const s = data.data;
+            document.getElementById("school-name").innerText = s.name;
+            document.getElementById("school-code").innerText = s.school_code;
+            document.getElementById("school-board").innerText = s.board;
+            document.getElementById("school-address").innerText = s.address;
+            document.getElementById("school-city").innerText = s.city;
+            document.getElementById("school-state").innerText = s.state;
+            document.getElementById("school-pincode").innerText = s.pincode;
+            document.getElementById("school-principal").innerText = s.principal_name;
+            document.getElementById("school-mobile").innerText = s.mobile_no;
+            document.getElementById("school-email").innerText = s.email;
+
+            if(s.photo_url) document.getElementById("school-photo").src = s.photo_url;
+            if(s.logo_url) document.getElementById("school-logo").src = s.logo_url;
+
+            if(s.signature_url){
+                const sig = document.getElementById("principal-signature");
+                if(sig){
+                    sig.src = s.signature_url;
+                } else {
+                    const td = document.querySelector("td span.text-muted");
+                    if(td){
+                        td.outerHTML = `<img id="principal-signature" src="${s.signature_url}" 
+                          style='max-width:250px;max-height:120px;border:1px solid #ddd;border-radius:6px;'>`;
+                    }
+                }
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById("editSchoolModal")).hide();
+            Swal.fire({
+              title: "Updated!",
+              text: "School details updated successfully.",
+              icon: "success",
+              timer: 1800,
+              showConfirmButton: false
+            });
+        } else {
+            Swal.fire({
+              title: "Error!",
+              text: "Something went wrong. Please check your inputs.",
+              icon: "error"
+            });
+        }
+    })
+    .catch(err => console.error(err));
+});
+
+// Autofill modal fields with current data
+document.getElementById("editSchoolModal").addEventListener("show.bs.modal", function(){
+    document.querySelector("#id_name").value = "{{ school.name|escapejs }}";
+    document.querySelector("#id_school_code").value = "{{ school.school_code|escapejs }}";
+    document.querySelector("#id_board").value = "{{ school.board|escapejs }}";
+    document.querySelector("#id_address").value = "{{ school.address|escapejs }}";
+    document.querySelector("#id_city").value = "{{ school.city|escapejs }}";
+    document.querySelector("#id_state").value = "{{ school.state|escapejs }}";
+    document.querySelector("#id_pincode").value = "{{ school.pincode|escapejs }}";
+    document.querySelector("#id_principal_name").value = "{{ school.principal_name|escapejs }}";
+    document.querySelector("#id_mobile_no").value = "{{ school.mobile_no|escapejs }}";
+    document.querySelector("#id_email").value = "{{ school.email|escapejs }}";
+    document.querySelector("#id_photo").value = "";
+    document.querySelector("#id_school_logo").value = "";
+    document.querySelector("#id_principal_signature").value = "";
+});
+</script>
+{% endblock %}

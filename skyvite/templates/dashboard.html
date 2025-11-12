@@ -1,0 +1,702 @@
+{% extends 'skyvite/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<style>
+    .username {
+        background: linear-gradient(92deg, #005bab 40.95% 40.95%, #FF7B00 70.55% 70.55%);
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        font-size: 23px;
+    }
+
+    .modulecard {
+        display: flex;
+        align-items: center;
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #333;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        cursor: pointer;
+        box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+    }
+
+    .modulecard img {
+        width: 35px;
+        height: 35px;
+        margin-right: 10px;
+    }
+
+    .modulecard.att {
+        background-color: #e8f9e8;
+    }
+
+    .modulecard.fee {
+        background-color: #F2F5FF;
+    }
+
+    .modulecard.cer {
+        background-color: #FEF8EA;
+    }
+
+    .modulecard.emp {
+        background-color: #FDE9ED;
+    }
+
+    .modulecard.exa {
+        background-color: #E8FCFF;
+    }
+
+    .dsb-heading {
+        padding: 10px 20px;
+        font-size: 18px;
+        color: #333;
+        background-color: #F2F5FF;
+        border-bottom: 1px solid #e0e0e0;
+        font-optical-sizing: auto;
+        font-weight: 500;
+        font-style: normal;
+    }
+
+    .fourcardorangered {
+        border-bottom: 3px solid orangered;
+        transition: all 0.3s ease;
+    }
+
+    .fourcardorangered:hover {
+        box-shadow: 0 4px 8px rgba(255, 69, 0, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .fourcardskyblue {
+        border-bottom: 3px solid deepskyblue;
+        transition: all 0.3s ease;
+
+    }
+
+    .fourcardskyblue:hover {
+        box-shadow: 0 4px 8px rgba(0, 191, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .fourcardyellow {
+        border-bottom: 3px solid gold;
+        transition: all 0.3s ease;
+
+    }
+
+    .fourcardyellow:hover {
+        box-shadow: 0 4px 8px rgba(255, 215, 0, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .fourcardgreen {
+        border-bottom: 3px solid #22ca80;
+        transition: all 0.3s ease;
+
+    }
+
+    .fourcardgreen:hover {
+        box-shadow: 0 4px 8px rgba(34, 202, 128, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .tooltip-container {
+        position: relative;
+    }
+
+    .subscribe-btn:hover::before {
+        left: 100%;
+    }
+
+    .subscribe-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .subscribe-btn:active {
+        transform: translateY(0);
+    }
+
+    .bell-icon {
+        width: 20px;
+        height: 20px;
+        animation: ring 2s infinite;
+    }
+
+    @keyframes ring {
+
+        0%,
+        90%,
+        100% {
+            transform: rotate(0deg);
+        }
+
+        5%,
+        15% {
+            transform: rotate(15deg);
+        }
+
+        10% {
+            transform: rotate(-15deg);
+        }
+    }
+
+    .tooltip {
+        position: absolute;
+        bottom: 108%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        padding: 10px 20px;
+        min-width: 280px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-50%) translateY(10px) scale(0.8);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1000;
+    }
+
+    .tooltip-container:hover .tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+
+    .tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid rgba(255, 255, 255, 0.95);
+    }
+
+    .tooltip-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .tooltip-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0;
+    }
+
+    .tooltip-content {
+        color: #4a5568;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .tooltip-features {
+        list-style: none;
+        margin: 0 0 10px 0;
+        padding: 0;
+    }
+
+    .tooltip-features li {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #4a5568;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .pulse-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120%;
+        height: 120%;
+        border: 2px solid rgba(255, 107, 107, 0.3);
+        border-radius: 50px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translate(-50%, -50%) scale(1.2);
+            opacity: 0;
+        }
+    }
+
+    .dashboard_view .nav-tabs {
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        gap: 20px !important;
+    }
+
+    .dashboard_view .nav-tabs .nav-link {
+        font-weight: 400;
+        color: #333;
+        border: none;
+        padding: 7px 0;
+    }
+
+    .dashboard_view .nav-tabs .nav-link:hover {
+        color: #000;
+        border: none;
+        outline: none;
+    }
+
+    .dashboard_view .nav-tabs .nav-link.active {
+        border: none;
+        color: #000;
+        border-bottom: 2px solid #005bab;
+    }
+
+    .view_school_btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        background: linear-gradient(92deg, #005bab 40.95% 40.95%, #FF7B00 70.55% 70.55%);
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+    }
+
+    .view_school_btn:hover {
+        color: #fff;
+        background: linear-gradient(92deg, #005bab 40.95% 40.95%, #FF7B00 70.55% 70.55%);
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+    }
+
+    .avatar.avatar-xs {
+        width: 1.25rem;
+        height: 1.25rem;
+        line-height: 1.25rem;
+        font-size: 0.65rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .avatar.avatar-xs svg {
+        width: 15px;
+    }
+    .badge {
+        padding: 0.25rem 0.45rem;
+        text-transform: capitalize;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-radius: 4px;
+    }
+
+    .badge.badge-soft-danger {
+        background: rgba(232, 38, 70, 0.1);
+        color: #E82646;
+    }
+
+    .badge.badge-soft-warning {
+        background: rgba(234, 179, 0, 0.1);
+        color: #EAB300;
+    }
+    .birthday-student{
+        font-size: 18px;
+        font-weight: 400;
+        color: #236db4;
+
+    }
+</style>
+<div class="page-wrapper">
+    <div class="page-breadcrumb">
+        <div class="row">
+            <div class="col-7 align-self-center">
+                <h3 class="page-title text-truncate text-dark font-weight-medium mb-1">
+                    <span id="greeting"></span> <span class="username">{{ request.user.first_name }}</span> !
+                </h3>
+                <p class="school-name m-0">{{ school.name }}</p>
+            </div>
+            <div class="col-5 align-self-center">
+                <div class="float-end">
+                    <!-- <a class="btn btn-outline-primary view_school_btn" href=""><img style="max-width: 30px;" src="{% static 'assets/images/school.gif' %}" alt=""> View School Details</a> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="dashboard_view">
+            <ul class="nav nav-tabs" id="myTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="dashboard_tab" data-bs-toggle="tab" href="#dashboard" role="tab"
+                        aria-controls="home" aria-selected="true">Dashboard</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="gettingstarted_tab" data-bs-toggle="tab" href="#gettingstarted" role="tab"
+                        aria-controls="profile" aria-selected="false">Getting Started</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="bugfix_tab" data-bs-toggle="tab" href="#bugfix" role="tab"
+                        aria-controls="contact" aria-selected="false">Recent Update</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active mt-3" id="dashboard" role="tabpanel" aria-labelledby="dashboard">
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card border-end fourcardorangered">
+                                <div class="card-body d-flex align-items-center">
+                                    <div>
+                                        <h2 class="count-no text-dark mb-1 font-weight-medium">{{ total_students }}</h2>
+                                        <h6 class="text-muted font-weight-normal mb-0">Students</h6>
+                                    </div>
+                                    <div class="ms-auto mt-md-3 mt-lg-0">
+                                        <span class="opacity-7 text-muted"><i data-feather="user"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="tooltip-container">
+                                <div class="card border-end fourcardskyblue">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <h2
+                                                    class="text-dark mb-1 w-100 text-truncate font-weight-medium count-no">
+                                                    <sup class="set-doller">₹</sup>18,300
+                                                </h2>
+                                                <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">
+                                                    Today's
+                                                    Collection
+                                                </h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tooltip">
+                                    <div class="tooltip-header">
+                                        <img style="max-width: 30px;"
+                                            src="{% static 'assets/images/tooltip/money-icon.png' %}" alt="">
+                                        <h3 class="tooltip-title">Breakdown</h3>
+                                    </div>
+                                    <p class="tooltip-content">
+                                        The total Collection includes :
+                                    </p>
+                                    <ul class="tooltip-features">
+                                        <li>
+                                            UPI - ₹8,000
+                                        </li>
+                                        <li>
+                                            Cash - ₹7,000
+                                        </li>
+                                        <li>
+                                            Bank Transfer - ₹3,300
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="tooltip-container">
+                                <div class="card border-end fourcardyellow">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <div class="d-inline-flex align-items-center">
+                                                    <h2 class="text-dark mb-1 font-weight-medium">74</h2>
+                                                    <span
+                                                        class="badge bg-danger font-12 text-white font-weight-medium rounded-pill ms-2 d-md-none d-lg-block">-25%</span>
+                                                </div>
+                                                <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">Total
+                                                    Staff
+                                                </h6>
+                                            </div>
+                                            <div class="ms-auto mt-md-3 mt-lg-0">
+                                                <!-- <span class="opacity-7 text-muted"><i data-feather=""></i></span> -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tooltip">
+                                    <p class="m-0">
+                                        The total number of staff members includes both teaching and non-teaching staff.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card border-end fourcardgreen">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <h2 class="text-dark mb-1 font-weight-medium">112</h2>
+                                            <h6 class="text-muted font-weight-normal mb-0 w-100 text-truncate">
+                                                Classrooms
+                                            </h6>
+                                        </div>
+                                        <div class="ms-auto mt-md-3 mt-lg-0">
+                                            <span class="opacity-7 text-muted"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4 col-md-12">
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <h4 class="card-title dsb-heading">Total Students</h4>
+                                    <div class="p-4">
+                                        <canvas id="genderDonutChart" width="280" height="280"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-md-12">
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <h4 class="card-title dsb-heading">Core Module</h4>
+                                    <div class="d-flex flex-wrap flex-column gap-3 p-4">
+                                        <a class="modulecard att">
+                                            <img src="{% static 'assets/images/landingpage/attendance.png' %}" alt="">
+                                            Attendance
+                                        </a>
+                                        <a class="modulecard fee">
+                                            <img src="{% static 'assets/images/landingpage/fees.png' %}" alt=""> Fees
+                                        </a>
+                                        <a href="{% url 'certificate_panel' %}" class="modulecard cer">
+                                            <img src="{% static 'assets/images/landingpage/certificate.png' %}" alt="">
+                                            Certificate
+                                        </a>
+                                        <a class="modulecard emp">
+                                            <img src="{% static 'assets/images/landingpage/employee.png' %}" alt="">
+                                            Employee
+                                        </a>
+                                        <a class="modulecard exa">
+                                            <img src="{% static 'assets/images/landingpage/examination.png' %}" alt="">
+                                            Examination
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- To Do List -->
+                        <div class="col-lg-4 col-md-12">
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <h4 class="card-title dsb-heading">To Do List</h4>
+                                    <div class="p-4">
+                                        <ul class="list-group">
+                                            {% for task in tasks %}
+                                            <li class="list-group-item">{{ task.title }}</li>
+                                            {% empty %}
+                                            <li class="list-group-item text-muted">No tasks yet</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#taskmodal">Add Task</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-lg-8">
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <h4 class="card-title dsb-heading">Leave Request</h4>
+                                    <div class="p-4">
+                                        <div class="card mb-2">
+                                            <div class="card-body p-3">
+                                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                                    <div class="d-flex align-items-center overflow-hidden me-2">
+                                                        <img class="rounded"
+                                                            style="max-width: 40px !important; margin-right:10px;"
+                                                            src="https://preskool.dreamstechnologies.com/html/template/assets/img/profiles/avatar-14.jpg"
+                                                            alt="teacher">
+                                                        <div class="overflow-hidden">
+                                                            <h6 class="mb-1 text-truncate"><a href="javascript:void(0);"
+                                                                    class="text-primary">James</a><span
+                                                                    class="badge badge-soft-danger ms-1">Emergency</span>
+                                                            </h6>
+                                                            <p class="text-truncate mb-0">Physics Teacher</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="#" class="avatar avatar-xs p-0 btn btn-success me-1"><i
+                                                                data-feather="check"></i></a>
+                                                        <a href="#" class="avatar avatar-xs p-0 btn btn-danger"><i
+                                                                data-feather="x"></i></a>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="d-flex align-items-center justify-content-between border-top pt-3">
+                                                    <p class="mb-0">Leave : <span>27 -29 Sep</span></p>
+                                                    <p class="mb-0">Apply on : <span>26 Sep</span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card mb-2">
+                                            <div class="card-body p-3">
+                                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                                    <div class="d-flex align-items-center overflow-hidden me-2">
+                                                        <img class="rounded"
+                                                            style="max-width: 40px !important; margin-right:10px;"
+                                                            src="https://tas.edu.in/wp-content/uploads/2020/09/Soumyasree-Nair.jpg"
+                                                            alt="teacher">
+                                                        <div class="overflow-hidden">
+                                                            <h6 class="mb-1 text-truncate"><a href="javascript:void(0);"
+                                                                    class="text-primary">Soumyashree Nayer</a><span
+                                                                    class="badge badge-soft-warning ms-1">Casual</span>
+                                                            </h6>
+                                                            <p class="text-truncate mb-0">Hindi Teacher</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="#" class="avatar avatar-xs p-0 btn btn-success me-1"><i
+                                                                data-feather="check"></i></a>
+                                                        <a href="#" class="avatar avatar-xs p-0 btn btn-danger"><i
+                                                                data-feather="x"></i></a>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="d-flex align-items-center justify-content-between border-top pt-3">
+                                                    <p class="mb-0">Leave : <span>29 - 30 Sep</span></p>
+                                                    <p class="mb-0">Apply on : <span>25 Sep</span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <h4 class="card-title  dsb-heading ">🎂 Today Birthday</h4>
+                                    <div class="">
+                                        {% if todays_birthdays %}
+                                        <ul class="list-group">
+                                            {% for student in todays_birthdays %}
+                                            <li class="list-group-item d-flex align-items-center">
+                                                {% if student.profilepic %}
+                                                <img src="{{ student.profilepic.url }}" alt="{{ student.first_name }}" class="rounded-circle me-3" width="50" height="50">
+                                                {% else %}
+                                                <img src="{% static 'images/default-profile.png' %}" alt="No Image" class="rounded-circle me-3" width="50" height="50">
+                                                {% endif %}
+                                                <div>
+                                                <p class="m-0 birthday-student">{{ student.first_name }} {{ student.surname }}</p>
+                                                <small><span style="color: green;">{{ student.student_class.name }}</span> </small>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% else %}
+                                        <p class="text-center m-0 p-3">No birthdays today 🎈</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="gettingstarted" role="tabpanel" aria-labelledby="gettingstarted_tab">
+                    <!-- <h4>Getting Started Tab Content</h4>
+                    <p>This is the content of the Getting Started tab.</p> -->
+                </div>
+                <div class="tab-pane fade" id="bugfix" role="tabpanel" aria-labelledby="bugfix_tab">
+                    <!-- <h4>Bug Fix Tab Content</h4>
+                    <p>This is the content of the Bug Fix tab.</p> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById("genderDonutChart").getContext("2d");
+    let genderChart = null; // store chart instance
+
+    function loadGenderData() {
+        fetch("/api/gender-data/")
+            .then(response => response.json())
+            .then(data => {
+                // destroy previous chart before creating new one
+                if (genderChart) {
+                    genderChart.destroy();
+                }
+
+                genderChart = new Chart(ctx, {
+                    type: "doughnut",
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: "Students",
+                            data: data.counts,
+                            backgroundColor: [
+                                "#36A2EB", // Male
+                                "#FF6384", // Female
+                            ],
+                            borderWidth: 1,
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // prevents resizing bug
+                        plugins: {
+                            legend: { position: "bottom" },
+                            title: {
+                                display: true,
+                                text: "Students by Gender"
+                            }
+                        },
+                        animation: {
+                            animateScale: true,
+                            animateRotate: true
+                        }
+                    },
+                });
+            })
+            .catch(error => console.error("Error loading chart:", error));
+    }
+
+    loadGenderData(); // initial load
+});
+</script>
+
+
+<script>
+    function updateGreeting() {
+        const now = new Date();
+        const hour = now.getHours();
+        let greeting = "Good Morning";
+        if (hour >= 12 && hour < 16) {
+            greeting = "Good Afternoon";
+        } else if (hour >= 16 && hour <= 23) {
+            greeting = "Good Evening";
+        }
+        document.getElementById("greeting").innerText = greeting;
+    }
+    updateGreeting();
+</script>
+{% endblock %}

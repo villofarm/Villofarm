@@ -1,0 +1,382 @@
+{% extends 'skyvite/base.html' %}
+{% load static %}
+
+{% block title %}All Students{% endblock %}
+
+{% block content %}
+<script>
+    const csrfToken = '{{ csrf_token }}';
+</script>
+
+<style>
+    .clickable-row {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .clickable-row:hover {
+        background-color: #f2f2f2;
+    }
+
+    .student_list tr th,
+    .student_list tr td {
+        vertical-align: middle;
+        padding: 10px !important;
+        font-size: 15px;
+        color: #484848;
+    }
+
+    .student_list .student_admission_no {
+        color: #3D5EE1;
+    }
+
+    .action_dropdown .dropdown-item {
+        font-size: 14px;
+        padding: 8px 15px;
+        color: #484848;
+    }
+
+    .action_dropdown .dropdown-item img {
+        width: 16px;
+        margin-right: 5px !important;
+    }
+    .download_certificate {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid gray !important;
+        color: gray !important;
+        padding: 5px 7px;
+        background: transparent !important;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .download_certificate svg{
+        margin: 0 !important;
+        width: 22px;
+    }
+</style>
+
+<div class="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="d-md-flex d-block align-items-center justify-content-between mb-3">
+                <div class="my-auto mb-2">
+                    <h3 class="mb-1">All Students</h3>
+                    <nav>
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="">Dashboard</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">All Students</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <button id="exportstdlist" class="download_certificate" title="Print Student List"
+                        style="display: flex; align-items: center;">
+                        <i data-feather="printer" class="form-control-icon" style="margin-right: 5px;"></i>
+                    </button>
+                    <a href="{% url 'add_student' %}" class="btn btn-sm btn-primary m-0">Add New Student</a>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card" style="overflow: visible; margin: 0;">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <p class="m-0">Total Students: <span class="student-count">{{ total_students }}</span></p>
+                            <div class="position-relative">
+                                <input type="text" id="studentSearch" class="form-control" placeholder="Search Student"
+                                    onkeyup="searchStudents()">
+                                <i style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); max-width: 20px;"
+                                    class="form-control-icon" data-feather="search"></i>
+                            </div>
+                        </div>
+
+                        {% if students %}
+                        <table class="table student_list w-100" id="studentTable" cellpadding="10">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"></th>
+                                    <th>Sr. No</th>
+                                    <th>Admission No</th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Father Name</th>
+                                    <th>Contact No.</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students %}
+                                <tr id="student-row-{{ student.id }}" class="clickable-row"
+                                    data-href="{% url 'view_student' student.id %}">
+                                    <td><input type="checkbox" class="student-checkbox" data-student-id="{{ student.id }}"></td>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td class="student_admission_no">{{ student.admission_number }}</td>
+                                    <td class="studnt-name">
+                                        <div style="position: relative; display: inline-block; margin-right: 5px;">
+                                            {% if student.has_image %}
+                                            <img src="{{ student.profilepic.url }}" alt="" width="40" height="40"
+                                                style="border-radius:50%;">
+                                            {% else %}
+                                            <img src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
+                                                alt="Student Image" width="40" height="40" style="border-radius:50%;">
+                                            {% endif %}
+
+                                            <span style="position: absolute; top: 0; left: 0; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; background-color: {% if student.status == 'active' %}green{% else %}red{% endif %};"></span>
+                                        </div>
+                                        {{ student.first_name }} {{ student.surname }}
+                                    </td>
+                                    <td>{{ student.student_class.name }} {{ student.section.name }}</td>
+                                    <td>{{ student.father_name }}</td>
+                                    <td>{{ student.contact_no }}</td>
+                                    <td>
+                                        <div class="dropdown action_dropdown">
+                                            <button class="btn dropdown-toggle" type="button"
+                                                id="dropdownMenuButton{{ student.id }}" data-bs-toggle="dropdown"
+                                                aria-expanded="false">⋮</button>
+                                            <ul class="dropdown-menu"
+                                                aria-labelledby="dropdownMenuButton{{ student.id }}">
+                                                <li><a class="dropdown-item" href="{% url 'view_student' student.id %}"><img src="{% static 'assets/images/view.png' %}" alt=""> View</a></li>
+                                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editStudentModal" data-url="{% url 'edit_student' student.id %}"><img src="{% static 'assets/images/edit.png' %}" alt="">Edit</a></li>
+                                                <li><button class="dropdown-item" type="button" data-student-id="{{ student.id }}" onclick="deleteStudent(this)"><img src="{% static 'assets/images/delete.png' %}" alt=""> Delete</button></li>
+                                                <li><button class="dropdown-item" type="button"><img src="{% static 'assets/images/id-card.png' %}" alt=""> Print ID Card</button></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <!-- Pagination Controls -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div class="d-flex align-items-center gap-2"> 
+                                Show 
+                                <select id="entriesPerPage" class="form-control" style="padding: 3px 5px !important;" onchange="changeEntriesPerPage()">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="25">25</option>
+                                </select> 
+                                entries
+                            </div>
+                            <div class="d-flex align-items-center gap-2"> 
+                                <button class="btn btn-sm btn-outline-primary" onclick="prevPage()" id="prevBtn"><i data-feather="chevron-left"></i></button>
+                                <span id="pageInfo">1</span>
+                                <button class="btn btn-sm btn-outline-primary" onclick="nextPage()" id="nextBtn"><i data-feather="chevron-right"></i></button>
+                            </div>
+                        </div>
+
+                        {% else %}
+                        <p>No students found.</p>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Print Modal -->
+<div class="modal fade" id="printModal" tabindex="-1" aria-labelledby="printModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body" id="printModalBody" style="overflow-y:auto; max-height: 80vh;">
+                <div class="text-center py-5">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="printPageBtn" class="btn btn-primary">Print</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editStudentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Student</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="editStudentFormContainer">
+                <div class="text-center py-5">
+                    <div class="spinner-border" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Edit Modal Load
+    document.querySelectorAll('[data-bs-target="#editStudentModal"]').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const url = this.getAttribute('data-url');
+            const container = document.getElementById('editStudentFormContainer');
+            container.innerHTML = `<div class="text-center py-5"><div class="spinner-border"></div></div>`;
+            fetch(url)
+                .then(resp => resp.ok ? resp.text() : Promise.reject("Failed to load form"))
+                .then(html => { container.innerHTML = html; })
+                .catch(err => { container.innerHTML = `<p class="text-danger">Failed to load form ❌</p>`; console.error(err); });
+        });
+    });
+
+    // Select all checkboxes
+    function toggleSelectAll(masterCheckbox) {
+        document.querySelectorAll(".student-checkbox").forEach(cb => cb.checked = masterCheckbox.checked);
+    }
+
+    // Search
+    function searchStudents() {
+        let input = document.getElementById("studentSearch").value.toLowerCase();
+        let table = document.getElementById("studentTable");
+        let tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+
+        for (let i = 0; i < tr.length; i++) {
+            let tds = tr[i].getElementsByTagName("td");
+            let rowText = "";
+            for (let j = 1; j < tds.length - 1; j++) tds[j] ? rowText += tds[j].textContent.toLowerCase() + " " : "";
+            tr[i].style.display = rowText.includes(input) ? "" : "none";
+        }
+        // Reset pagination
+        currentPage = 1;
+        showPage(currentPage);
+    }
+
+    // Delete student
+    function deleteStudent(button) {
+        const studentId = button.getAttribute("data-student-id");
+        if (!confirm("Are you sure you want to delete this student? 🗑️")) return;
+        fetch(`/students/delete/${studentId}/`, {
+            method: "POST",
+            headers: { "X-CSRFToken": csrfToken, "Accept": "application/json" },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) { document.getElementById(`student-row-${studentId}`).remove(); alert("Student deleted successfully ✅"); }
+            else alert("Error deleting student ❌");
+        })
+        .catch(err => { console.error(err); alert("Something went wrong ❌"); });
+    }
+
+    // Clickable row
+    document.addEventListener("DOMContentLoaded", function() {
+        const rows = document.querySelectorAll(".clickable-row");
+        rows.forEach(row => {
+            row.addEventListener("click", function(event) {
+                if (event.target.closest("button") || event.target.closest(".dropdown-menu") || event.target.type === 'checkbox') return;
+                window.location.href = row.getAttribute("data-href");
+            });
+        });
+
+        if (window.feather) window.feather.replace();
+    });
+
+    // Print modal
+    document.addEventListener("DOMContentLoaded", function () {
+        const printBtn = document.getElementById('exportstdlist');
+        const printModal = new bootstrap.Modal(document.getElementById('printModal'));
+        const printModalBody = document.getElementById('printModalBody');
+        const printPageBtn = document.getElementById('printPageBtn');
+
+        printBtn.addEventListener('click', function () {
+            printModalBody.innerHTML = `<div class="text-center py-5"><div class="spinner-border"></div></div>`;
+            printModal.show();
+            fetch("{% url 'student_list_print' %}")
+                .then(resp => resp.ok ? resp.text() : Promise.reject("Failed"))
+                .then(html => printModalBody.innerHTML = html)
+                .catch(err => { printModalBody.innerHTML = `<p class="text-danger">Failed to load printable content.</p>`; console.error(err); });
+        });
+
+        printPageBtn.addEventListener('click', function () {
+            const printContent = printModalBody.innerHTML;
+            const printWindow = window.open('', '', 'height=700,width=900');
+            printWindow.document.write('<html><head><title>Print Students</title>');
+            printWindow.document.write(`<style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                table { width: 100%; border-collapse: collapse; }
+                th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                th { background-color: #16a085; color: white; text-transform: uppercase; }
+                img { border-radius: 50%; }
+            </style>`);
+            printWindow.document.write('</head><body>' + printContent + '</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        });
+    });
+
+    // Edit form submit
+    document.addEventListener("submit", function (e) {
+        if (e.target && e.target.id === "editStudentForm") {
+            e.preventDefault();
+            const form = e.target;
+            const url = form.action || window.location.href;
+            const formData = new FormData(form);
+            fetch(url, { method: "POST", body: formData, headers: { "X-Requested-With": "XMLHttpRequest" } })
+            .then(resp => resp.json())
+            .then(data => {
+                if (data.success) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById("editStudentModal"));
+                    modal.hide();
+                    location.reload();
+                } else alert("Error saving student ❌");
+            })
+            .catch(err => console.error(err));
+        }
+    });
+
+    // ------------------ Pagination ------------------
+    let currentPage = 1;
+    let entriesPerPage = parseInt(document.getElementById("entriesPerPage").value);
+    let tr;
+
+    function showPage(page) {
+        const table = document.getElementById("studentTable");
+        tr = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+        let totalEntries = 0;
+        for (let i = 0; i < tr.length; i++) if (tr[i].style.display !== "none") totalEntries++;
+        let visibleRows = [];
+        for (let i = 0; i < tr.length; i++) if (tr[i].style.display !== "none") visibleRows.push(tr[i]);
+
+        const totalPages = Math.ceil(visibleRows.length / entriesPerPage);
+        if (page > totalPages) page = totalPages;
+        if (page < 1) page = 1;
+        currentPage = page;
+
+        // Hide all
+        visibleRows.forEach(row => row.style.display = "none");
+
+        // Show current page
+        const start = (currentPage - 1) * entriesPerPage;
+        const end = start + entriesPerPage;
+        for (let i = start; i < end && i < visibleRows.length; i++) visibleRows[i].style.display = "";
+
+        document.getElementById("pageInfo").innerText = `Page ${currentPage} of ${totalPages}`;
+        document.getElementById("prevBtn").disabled = currentPage === 1;
+        document.getElementById("nextBtn").disabled = currentPage === totalPages || totalPages === 0;
+    }
+
+    function prevPage() { showPage(currentPage - 1); }
+    function nextPage() { showPage(currentPage + 1); }
+    function changeEntriesPerPage() {
+        entriesPerPage = parseInt(document.getElementById("entriesPerPage").value);
+        currentPage = 1;
+        showPage(currentPage);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() { showPage(currentPage); });
+</script>
+
+{% endblock %}
